@@ -1,0 +1,46 @@
+{
+  "version": "draft-2026-10-26",
+  "min_signals_for_fit": 2,
+  "criteria": [
+    {
+      "id": "industry",
+      "kind": "must_have",
+      "description": "Works in one of the industries DEPLOY has served: energy, consulting, venture capital, finance, HR tech, education, or enterprise software."
+    },
+    {
+      "id": "size",
+      "kind": "must_have",
+      "description": "Has roughly 50 to 5,000 employees: big enough to have a dev team and a workflow owner, small enough to need outside AI help."
+    },
+    {
+      "id": "has_tech_team",
+      "kind": "must_have",
+      "description": "Has an engineering or IT team, e.g. engineering job posts, a tech blog, or a product they build."
+    },
+    {
+      "id": "ai_intent",
+      "kind": "signal",
+      "description": "Shows public interest in AI: open AI/ML/automation roles, an announced AI pilot, or AI mentioned as a company priority."
+    },
+    {
+      "id": "common_stack",
+      "kind": "signal",
+      "description": "Uses tools DEPLOY works with (Salesforce, HubSpot, Slack, Microsoft 365, Google Workspace, Power BI, AWS, Azure, Google Cloud), seen in job posts or case studies."
+    },
+    {
+      "id": "ops_heavy",
+      "kind": "signal",
+      "description": "Has high-volume operational work such as support tickets, claims, onboarding, sales operations, or document review."
+    },
+    {
+      "id": "is_ai_vendor",
+      "kind": "exclusion",
+      "description": "The company is itself an AI consultancy, AI agency, or AI-native product company."
+    },
+    {
+      "id": "too_large_ai_team",
+      "kind": "exclusion",
+      "description": "The company is a big tech company with large in-house AI research teams."
+    }
+  ]
+}

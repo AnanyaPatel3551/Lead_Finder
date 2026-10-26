@@ -1,0 +1,9 @@
+openai==3.37.0       # LLM client; talks to Groq via its OpenAI-compatible API
+httpx==0.28.1        # HTTP requests: fetching pages, calling Tavily's REST API
+trafilatura==2.3.1  # extracts readable article text from raw HTML
+pydantic==2.14.1      # validates every handoff and every LLM output
+rapidfuzz==3.14.6     # fuzzy matching: is the quoted text really on the page?
+ddgs==9.16.1          # DuckDuckGo search, no key: backup if Tavily runs out
+python-dotenv==1.2.4 # loads .env into environment variables
+rich==15.0.0         # readable terminal tables and progress output
+pytest==9.1.1        # runs the planted-error tests

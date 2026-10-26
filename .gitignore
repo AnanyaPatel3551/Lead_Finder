@@ -1,0 +1,17 @@
+# Private instructions for Claude Code: never committed
+/CLAUDE.md
+
+# Secrets: real API keys live only here (.env.example stays tracked)
+.env
+
+# Virtual environment (rebuilt from requirements.txt)
+.venv/
+
+# Python bytecode and test caches
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Generated at run time
+runs/
+cache/
