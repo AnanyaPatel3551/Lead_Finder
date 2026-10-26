@@ -43,6 +43,18 @@ MAX_PAGE_CHARS: int = 2_000     # fetch_page cuts extracted text to this length 
 MAX_SEARCH_RESULTS: int = 5     # web_search returns at most this many results
 MAX_SNIPPET_CHARS: int = 300    # each search snippet is cut to this length
 FETCH_TIMEOUT_SECONDS: float = 15.0  # so one slow site can't freeze the run
+MAX_JOB_ROLES: int = 15         # find_jobs returns at most this many roles (plus the total count)
+MAX_JOB_BOARD_GUESSES: int = 4  # board names tried per company, each on Greenhouse and Lever
+# Browser-style so ordinary sites serve us, but honest about who we are
+FETCH_USER_AGENT: str = "Mozilla/5.0 (compatible; LeadFinder/0.1; fellowship project)"
+MIN_PAGE_TEXT_CHARS: int = 200  # less readable text than this: a JavaScript shell or block page
+
+# Ground rule: no personal data, no review sites. Search hides these and fetch refuses them.
+# An entry matches the domain and its subdomains; "domain/path" also needs that path prefix.
+BLOCKED_DOMAINS: list[str] = [
+    "linkedin.com", "rocketreach.co", "zoominfo.com", "apollo.io", "lusha.com", "signalhire.com",
+    "glassdoor.com", "ambitionbox.com", "indeed.com/cmp",
+]
 
 # --- File paths (absolute, so scripts work from any folder) ---
 ROOT_DIR: Path = Path(__file__).resolve().parent.parent
