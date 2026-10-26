@@ -24,6 +24,14 @@ class Criterion(Contract):
     id: str = Field(min_length=1)
     kind: CriterionKind
     description: str = Field(min_length=1)
+    unknown_blocks: bool  # true: if still unknown after research, the verdict is not_enough_evidence
+
+    @model_validator(mode="after")
+    def signals_never_block(self) -> "Criterion":
+        """An unknown signal simply doesn't count, so unknown_blocks=true on one would mislead."""
+        if self.kind == "signal" and self.unknown_blocks:
+            raise ValueError(f"criterion '{self.id}' is a signal: unknown_blocks must be false")
+        return self
 
 
 class CriteriaFile(Contract):

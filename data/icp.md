@@ -30,18 +30,22 @@ Signals (each one that is met makes a stronger fit):
    pilot, or AI mentioned as a company priority.
 5. common_stack: uses tools DEPLOY works with (Salesforce, HubSpot, Slack, Microsoft 365,
    Google Workspace, Power BI, AWS, Azure, Google Cloud), seen in job posts or case studies.
-6. ops_heavy: has high-volume operational work such as support tickets, claims, onboarding,
-   sales operations, or document review.
+6. ops_heavy: has high-volume operations: a dedicated support, claims or onboarding team,
+   or a stated volume (e.g. tickets or claims per month).
 
 Exclusions (any one -> not_fit):
-7. is_ai_vendor: the company is itself an AI consultancy, AI agency or AI-native product
-   company (they would build it themselves, or they compete with DEPLOY). [assumption]
+7. is_ai_vendor: AI services or AI agents are the main product the company sells (they
+   would build it themselves, or they compete with DEPLOY). A company selling an
+   "AI-powered" product in another category is not excluded. [assumption]
 8. too_large_ai_team: a big tech company with large in-house AI research teams. [assumption]
 
 ## Scoring rule (plain English)
 - Any failed must-have or any triggered exclusion -> not_fit.
-- All must-haves met and at least 2 signals met -> fit.
-- A must-have or exclusion still "unknown" after research -> not_enough_evidence.
+- A must-have or exclusion still "unknown" after research -> not_enough_evidence,
+  but only if that criterion has unknown_blocks: true in criteria.json.
+  Size has unknown_blocks: false: a size shown to be out of range still fails, but an
+  unknown size alone does not block a fit (company sites rarely state headcount). [assumption]
+- All must-haves met (or unknown and non-blocking) and at least 2 signals met -> fit.
 - Otherwise -> not_fit.
 
 ## Open questions for the organisers
