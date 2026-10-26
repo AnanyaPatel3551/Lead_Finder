@@ -25,6 +25,16 @@ Assumptions in the draft (from `data/icp.md`):
   headcount (see Risks). **[assumption]**
 - **`is_ai_vendor`** covers only companies whose main product is AI services or AI agents.
   An "AI-powered" product company is not excluded. **[assumption]**
+- **Size is a strict 50 to 5,000 range, with no margin**, so the rule is the same for the
+  agent and the labellers. The company's own headcount statement (about page, careers page,
+  press release) is preferred. A third-party workforce estimate (e.g. Revelio Labs) counts
+  only when the company states nothing itself. These are company-level totals, not personal
+  data. If sources disagree, the company's own figure wins. **[assumption]**
+- **`too_large_ai_team` blocks only when proven.** Its `unknown_blocks` is false, because
+  "no large AI research team" can almost never be shown, and an unknown would otherwise turn
+  most fits into `not_enough_evidence`. **[assumption]**
+- **`ai_intent` counts building or adopting AI in any form**: open AI/ML roles, an announced
+  AI pilot, or AI features in the company's own product. **[assumption]**
 
 Open questions for the organisers: Is there an official ICP and a labelled list of companies?
 Is the target geography India only, or global? What is the intended size range, and does

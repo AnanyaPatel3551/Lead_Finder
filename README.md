@@ -56,3 +56,7 @@ recall are shown with their counts.
   pipeline's drafter works from the researcher's evidence records.
 
 Scoring a run: `python -m evals.scoring runs/<timestamp>/leads.json`
+
+**Data note:** `cache/` (git-ignored, local only) can contain public page text, which may name
+people. Delete it when the project ends. Run logs store only each page's length and hash,
+never its text.

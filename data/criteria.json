@@ -1,5 +1,5 @@
 {
-  "version": "draft-2026-10-26b",
+  "version": "draft-2026-10-26c",
   "min_signals_for_fit": 2,
   "criteria": [
     {
@@ -11,7 +11,7 @@
     {
       "id": "size",
       "kind": "must_have",
-      "description": "Has roughly 50 to 5,000 employees: big enough to have a dev team and a workflow owner, small enough to need outside AI help.",
+      "description": "Has 50 to 5,000 employees (a strict range, no margin): big enough to have a dev team and a workflow owner, small enough to need outside AI help. Prefer the company's own statement of headcount (about page, careers page, press release). Use a third-party workforce estimate only if the company states nothing itself. If sources disagree, the company's own figure wins.",
       "unknown_blocks": false
     },
     {
@@ -23,7 +23,7 @@
     {
       "id": "ai_intent",
       "kind": "signal",
-      "description": "Shows public interest in AI: open AI/ML/automation roles, an announced AI pilot, or AI mentioned as a company priority.",
+      "description": "Is building or adopting AI in any form: open AI/ML/automation roles, an announced AI pilot, AI mentioned as a company priority, or AI features in its own product (e.g. integrations with OpenAI).",
       "unknown_blocks": false
     },
     {
@@ -48,7 +48,7 @@
       "id": "too_large_ai_team",
       "kind": "exclusion",
       "description": "The company is a big tech company with large in-house AI research teams.",
-      "unknown_blocks": true
+      "unknown_blocks": false
     }
   ]
 }

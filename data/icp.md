@@ -20,14 +20,18 @@ unsure where to start.
 Must-haves (fail any one -> not_fit):
 1. industry: works in one of the industries DEPLOY has served: energy, consulting,
    venture capital, finance, HR tech, education, or enterprise software.
-2. size: roughly 50 to 5,000 employees, big enough to have a dev team and a workflow
-   owner, small enough to need outside AI help. [assumption]
+2. size: 50 to 5,000 employees, a strict range with no margin: big enough to have a dev
+   team and a workflow owner, small enough to need outside AI help. [assumption]
+   Evidence: prefer the company's own statement of headcount (about page, careers page,
+   press release). A third-party workforce estimate (e.g. Revelio Labs) counts only when
+   the company states nothing itself. If sources disagree, the company's own figure wins.
 3. has_tech_team: has an engineering or IT team (e.g. engineering job posts, a tech blog,
    a product they build).
 
 Signals (each one that is met makes a stronger fit):
-4. ai_intent: public sign of interest in AI: open AI/ML/automation roles, an announced AI
-   pilot, or AI mentioned as a company priority.
+4. ai_intent: the company is building or adopting AI in any form: open AI/ML/automation
+   roles, an announced AI pilot, AI mentioned as a company priority, or AI features in its
+   own product (e.g. "integrations with OpenAI").
 5. common_stack: uses tools DEPLOY works with (Salesforce, HubSpot, Slack, Microsoft 365,
    Google Workspace, Power BI, AWS, Azure, Google Cloud), seen in job posts or case studies.
 6. ops_heavy: has high-volume operations: a dedicated support, claims or onboarding team,
@@ -45,6 +49,8 @@ Exclusions (any one -> not_fit):
   but only if that criterion has unknown_blocks: true in criteria.json.
   Size has unknown_blocks: false: a size shown to be out of range still fails, but an
   unknown size alone does not block a fit (company sites rarely state headcount). [assumption]
+  too_large_ai_team has unknown_blocks: false: the exclusion applies only when proven,
+  because "no large AI research team" can almost never be shown. [assumption]
 - All must-haves met (or unknown and non-blocking) and at least 2 signals met -> fit.
 - Otherwise -> not_fit.
 

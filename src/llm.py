@@ -85,6 +85,7 @@ class LLMResponse:
     message: object                   # the assistant message: .content (text) and .tool_calls
     parsed: BaseModel | None          # filled only when a schema was given and the reply matched it
     validation_error: str | None      # why the reply didn't match the schema, for the caller's retry
+    finish_reason: str | None         # "stop" = finished; "length" = cut off at MAX_OUTPUT_TOKENS
     usage: Usage
 
 
@@ -136,7 +137,7 @@ def _build_response(response: object, schema: type[BaseModel] | None) -> LLMResp
             parsed = schema.model_validate_json(message.content or "")
         except ValidationError as error:
             validation_error = str(error)  # returned, not raised, so this call's tokens are still counted
-    return LLMResponse(message, parsed, validation_error, usage)
+    return LLMResponse(message, parsed, validation_error, response.choices[0].finish_reason, usage)
 
 
 def call_llm(messages: list[dict], tools: list[dict] | None = None,
@@ -176,4 +177,49 @@ def call_llm(messages: list[dict], tools: list[dict] | None = None,
             if attempt > config.MAX_RETRIES or wait > config.MAX_RETRY_WAIT_SECONDS:
                 raise  # out of retries, or the daily limit is used up: Groq's message says which
             time.sleep(wait)
+        except openai.BadRequestError as error:
+            if error.code not in ("json_validate_failed", "tool_use_failed"):
+                raise  # any other 400 is a bug in our request, not a bad reply
+            # Groq rejects some bad replies instead of returning them: broken JSON in strict mode
+            # (often cut off at the output limit), or a tool call when no tools were offered.
+            # Treat them as failed replies so the caller can retry, not crash.
+            # Groq sends no token counts with these errors, so only the request is counted.
+            return LLMResponse(None, None, f"Groq rejected the reply ({error.code}): {error.message}",
+                               error.code, Usage(requests=1))
     raise RuntimeError("unreachable: the loop always returns or raises")
+
+
+def call_llm_validated(messages: list[dict], schema: type[BaseModel],
+                       reasoning_effort: str = config.REASONING_EFFORT) -> LLMResponse:
+    """Ask for JSON matching schema; if the reply fails validation, retry ONCE showing the model its error.
+
+    In: the conversation and a Pydantic schema. The caller's list is never changed.
+    Out: the last LLMResponse, with usage summed over both attempts. If validation_error is
+    still set, both attempts failed: the caller should log it and skip, never crash.
+    """
+    first = call_llm(messages, schema=schema, reasoning_effort=reasoning_effort)
+    if first.validation_error is None:
+        return first
+
+    # The model sees its own bad reply and exactly what was wrong with it
+    error_text = first.validation_error[:1500]  # Pydantic repeats the input; keep the retry small
+    if first.finish_reason == "tool_use_failed":
+        # The model tried to call a tool, but this call offers none
+        correction = ("You cannot call tools now: research is over. Reply with the final JSON only, "
+                      "using what you already found; anything still missing is 'unknown'.")
+    elif first.finish_reason in ("length", "json_validate_failed"):
+        # Cut off at the output limit: the same reply would be cut off again, so ask for less
+        correction = ("Your reply was cut off or was not valid JSON. Reply again with corrected JSON only, "
+                      "and keep every quote and why_it_fits short.")
+    else:
+        correction = ("Your reply did not match the required format:\n"
+                      f"{error_text}\nReply again with corrected JSON only.")
+    # message is None when Groq rejected the reply outright, so there is no text to show back
+    bad_reply = (first.message.content if first.message else None) or "(empty reply)"
+    retry_messages = messages + [
+        {"role": "assistant", "content": bad_reply},
+        {"role": "user", "content": correction},
+    ]
+    second = call_llm(retry_messages, schema=schema, reasoning_effort=reasoning_effort)
+    second.usage.add(first.usage)  # both attempts cost tokens, so both are counted
+    return second

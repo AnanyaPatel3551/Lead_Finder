@@ -33,12 +33,13 @@ MAX_RETRY_WAIT_SECONDS: float = 90.0  # a longer retry-after means the DAILY lim
 LLM_TIMEOUT_SECONDS: float = 60.0     # so one hung request can't freeze the run
 
 # --- Output size ---
-MAX_OUTPUT_TOKENS: int = 1_200  # caps reasoning + answer; also reserved in the size check
+MAX_OUTPUT_TOKENS: int = 2_000  # caps reasoning + answer; also reserved in the size check.
+# Raised from 1,200: a final lead card used 1,106 tokens in testing, too close to be cut off
 REASONING_EFFORT: str = "low"   # gpt-oss "thinking" tokens count against TPM; low is enough for most calls
 
 # --- Tool output caps ---
-# Largest request (6th of a 5-tool loop): ~1,500 base + 4 trimmed results x ~260 tokens
-# + 1 full result ~560 + 1,200 output ~= 4,300 tokens, well under MAX_TOKENS_PER_REQUEST
+# Largest request: the single agent's final call, measured at ~3,600 input tokens (full
+# research transcript) + 2,000 output reserve ~= 5,600, under MAX_TOKENS_PER_REQUEST (7,200)
 MAX_PAGE_CHARS: int = 2_000     # fetch_page cuts extracted text to this length (~500 tokens)
 MAX_SEARCH_RESULTS: int = 5     # web_search returns at most this many results
 MAX_SNIPPET_CHARS: int = 300    # each search snippet is cut to this length
