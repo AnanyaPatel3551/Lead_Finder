@@ -36,6 +36,7 @@ LLM_TIMEOUT_SECONDS: float = 60.0     # so one hung request can't freeze the run
 MAX_OUTPUT_TOKENS: int = 2_000  # caps reasoning + answer; also reserved in the size check.
 # Raised from 1,200: a final lead card used 1,106 tokens in testing, too close to be cut off
 REASONING_EFFORT: str = "low"   # gpt-oss "thinking" tokens count against TPM; low is enough for most calls
+JUDGE_TEMPERATURE: float = 0.0  # the checker's judge must give the same answer on the same card
 
 # --- Tool output caps ---
 # Largest request: the single agent's final call, measured at ~3,600 input tokens (full

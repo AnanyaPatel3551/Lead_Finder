@@ -114,3 +114,14 @@ def format_for_llm(page: PageResult) -> str:
     if page.empty_or_js:
         return f"{header}\nThe page had almost no readable text (JavaScript or a block page): treat as unknown."
     return f"{header}\ntext:\n{page.text}"
+
+
+def read_cached(url: str) -> PageResult | None:
+    """The cached copy of a page, or None if this machine never cached it. No network, no writes.
+
+    The checker uses it to tell drift (quote was in the copy the agent read) from a made-up quote.
+    """
+    cache_file = _cache_path(url)
+    if not cache_file.exists():
+        return None
+    return PageResult(**json.loads(cache_file.read_text(encoding="utf-8")))

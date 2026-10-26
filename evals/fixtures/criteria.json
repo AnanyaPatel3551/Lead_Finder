@@ -1,0 +1,54 @@
+{
+  "version": "draft-2026-10-26c",
+  "min_signals_for_fit": 2,
+  "criteria": [
+    {
+      "id": "industry",
+      "kind": "must_have",
+      "description": "Works in one of the industries DEPLOY has served: energy, consulting, venture capital, finance, HR tech, education, or enterprise software.",
+      "unknown_blocks": true
+    },
+    {
+      "id": "size",
+      "kind": "must_have",
+      "description": "Has 50 to 5,000 employees (a strict range, no margin): big enough to have a dev team and a workflow owner, small enough to need outside AI help. Prefer the company's own statement of headcount (about page, careers page, press release). Use a third-party workforce estimate only if the company states nothing itself. If sources disagree, the company's own figure wins.",
+      "unknown_blocks": false
+    },
+    {
+      "id": "has_tech_team",
+      "kind": "must_have",
+      "description": "Has an engineering or IT team, e.g. engineering job posts, a tech blog, or a product they build.",
+      "unknown_blocks": true
+    },
+    {
+      "id": "ai_intent",
+      "kind": "signal",
+      "description": "Is building or adopting AI in any form: open AI/ML/automation roles, an announced AI pilot, AI mentioned as a company priority, or AI features in its own product (e.g. integrations with OpenAI).",
+      "unknown_blocks": false
+    },
+    {
+      "id": "common_stack",
+      "kind": "signal",
+      "description": "Uses tools DEPLOY works with (Salesforce, HubSpot, Slack, Microsoft 365, Google Workspace, Power BI, AWS, Azure, Google Cloud), seen in job posts or case studies.",
+      "unknown_blocks": false
+    },
+    {
+      "id": "ops_heavy",
+      "kind": "signal",
+      "description": "Has high-volume operations: a dedicated support, claims or onboarding team, or a stated volume (e.g. tickets or claims per month).",
+      "unknown_blocks": false
+    },
+    {
+      "id": "is_ai_vendor",
+      "kind": "exclusion",
+      "description": "AI services or AI agents are the main product the company sells. A company selling an 'AI-powered' product in another category is not excluded.",
+      "unknown_blocks": true
+    },
+    {
+      "id": "too_large_ai_team",
+      "kind": "exclusion",
+      "description": "The company is a big tech company with large in-house AI research teams.",
+      "unknown_blocks": false
+    }
+  ]
+}

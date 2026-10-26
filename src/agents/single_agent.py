@@ -23,6 +23,7 @@ Evidence rules:
 - The company's own pages are the main evidence. Careers-page text is the main hiring evidence;
   job-board roles from find_jobs are a bonus. Search snippets help you find pages; quote a fetched
   page when you can.
+- Prefer concrete evidence (job roles, product features, stated numbers) over slogans and taglines.
 - Use the website you are given to make sure every page is about THIS company, not another
   company with a similar name.
 - An empty, blocked or JavaScript-only page tells you nothing: the criterion stays "unknown".

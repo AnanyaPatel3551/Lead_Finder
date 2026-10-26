@@ -1,0 +1,27 @@
+Planted-error tests: output of 'pytest evals/test_planted.py -m "" -v -s'
+Run on 2026-10-26 17:25, model openai/gpt-oss-120b, judge temperature 0, criteria snapshot evals/fixtures/criteria.json
+
+============================= test session starts =============================
+platform win32 -- Python 3.13.1, pytest-9.1.1, pluggy-1.7.0 -- C:\Lead_Finder\.venv\Scripts\python.exe
+rootdir: C:\Lead_Finder
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 4 items
+
+evals/test_planted.py::test_good_fixture_passes_code_checks 
+[good fixture] 0 issue(s)
+PASSED
+evals/test_planted.py::test_rejects_made_up_url 
+[made-up URL] 1 issue(s)
+  url_unreachable (E1): E1: https://razorpay.com/about-our-ai-lab/ could not be verified: HTTP 404
+PASSED
+evals/test_planted.py::test_rejects_quote_not_on_page 
+[quote not on page] 1 issue(s)
+  quote_not_found (E4): E4: quote not found on https://razorpay.com/careers/ (likely made up: the quote is in neither the live page nor the cached copy)
+PASSED
+evals/test_planted.py::test_rejects_non_icp_company 
+[non-ICP company (judge, 1 request, 1757 tokens)] 1 issue(s)
+  judgement (size): size: the quote does not prove it: The quote reports "approximately 5,233 total employees," which exceeds the maximum of 5,000 required by the criterion.
+PASSED
+
+============================== 4 passed in 2.52s ==============================

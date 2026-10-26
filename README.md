@@ -57,6 +57,15 @@ recall are shown with their counts.
 
 Scoring a run: `python -m evals.scoring runs/<timestamp>/leads.json`
 
+**Known limitation: the checker's LLM judge is not fully repeatable.** On the same lead card
+it can accept a borderline claim one time and reject it the next, even at temperature 0 with a
+fixed seed (Groq, gpt-oss-120b). In testing, the known-good Razorpay card passed the judge in 1
+of 3 runs under each setting. It flipped only on claims backed by careers-page slogans, never on
+claims with concrete evidence. So both prompts tell the agent to prefer concrete evidence (job
+roles, product features, stated numbers) over slogans. When the judge rejects a borderline
+quote, the drafter's retry asks for a stronger one. The code checks (URL, quote, ids, score,
+personal data) are fully repeatable.
+
 **Data note:** `cache/` (git-ignored, local only) can contain public page text, which may name
 people. Delete it when the project ends. Run logs store only each page's length and hash,
 never its text.

@@ -142,7 +142,8 @@ def _build_response(response: object, schema: type[BaseModel] | None) -> LLMResp
 
 def call_llm(messages: list[dict], tools: list[dict] | None = None,
              schema: type[BaseModel] | None = None,
-             reasoning_effort: str = config.REASONING_EFFORT) -> LLMResponse:
+             reasoning_effort: str = config.REASONING_EFFORT,
+             temperature: float | None = None) -> LLMResponse:
     """Send one chat request: trims history, checks size, paces, retries on 429, counts usage.
 
     In: messages as dicts; optionally tools (for a tool loop) OR a Pydantic schema (for JSON output).
@@ -161,6 +162,9 @@ def call_llm(messages: list[dict], tools: list[dict] | None = None,
     request: dict = {"model": config.LLM_MODEL, "messages": to_send,
                      "max_completion_tokens": config.MAX_OUTPUT_TOKENS,
                      "reasoning_effort": reasoning_effort}
+    if temperature is not None:
+        # None keeps the provider's default; only callers that need repeatable answers set it
+        request["temperature"] = temperature
     if tools:
         request["tools"] = tools
     if json_schema is not None:
@@ -190,14 +194,15 @@ def call_llm(messages: list[dict], tools: list[dict] | None = None,
 
 
 def call_llm_validated(messages: list[dict], schema: type[BaseModel],
-                       reasoning_effort: str = config.REASONING_EFFORT) -> LLMResponse:
+                       reasoning_effort: str = config.REASONING_EFFORT,
+                       temperature: float | None = None) -> LLMResponse:
     """Ask for JSON matching schema; if the reply fails validation, retry ONCE showing the model its error.
 
     In: the conversation and a Pydantic schema. The caller's list is never changed.
     Out: the last LLMResponse, with usage summed over both attempts. If validation_error is
     still set, both attempts failed: the caller should log it and skip, never crash.
     """
-    first = call_llm(messages, schema=schema, reasoning_effort=reasoning_effort)
+    first = call_llm(messages, schema=schema, reasoning_effort=reasoning_effort, temperature=temperature)
     if first.validation_error is None:
         return first
 
@@ -220,6 +225,6 @@ def call_llm_validated(messages: list[dict], schema: type[BaseModel],
         {"role": "assistant", "content": bad_reply},
         {"role": "user", "content": correction},
     ]
-    second = call_llm(retry_messages, schema=schema, reasoning_effort=reasoning_effort)
+    second = call_llm(retry_messages, schema=schema, reasoning_effort=reasoning_effort, temperature=temperature)
     second.usage.add(first.usage)  # both attempts cost tokens, so both are counted
     return second

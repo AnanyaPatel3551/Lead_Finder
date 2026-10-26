@@ -9,7 +9,7 @@ Verdict = Literal["fit", "not_fit", "not_enough_evidence", "unverified"]
 Met = Literal["yes", "no", "unknown"]
 CriterionKind = Literal["must_have", "signal", "exclusion"]
 IssueKind = Literal["url_unreachable", "quote_not_found", "unknown_evidence_id",
-                    "score_mismatch", "judgement"]
+                    "score_mismatch", "personal_data", "judgement"]
 
 
 class Contract(BaseModel):

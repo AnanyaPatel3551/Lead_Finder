@@ -1,0 +1,85 @@
+{
+  "company": "Razorpay",
+  "verdict": "not_fit",
+  "score": 1,
+  "criteria": [
+    {
+      "criterion_id": "industry",
+      "met": "yes",
+      "evidence_id": "E1"
+    },
+    {
+      "criterion_id": "size",
+      "met": "no",
+      "evidence_id": "E2"
+    },
+    {
+      "criterion_id": "has_tech_team",
+      "met": "yes",
+      "evidence_id": "E3"
+    },
+    {
+      "criterion_id": "ai_intent",
+      "met": "yes",
+      "evidence_id": "E4"
+    },
+    {
+      "criterion_id": "common_stack",
+      "met": "unknown",
+      "evidence_id": null
+    },
+    {
+      "criterion_id": "ops_heavy",
+      "met": "unknown",
+      "evidence_id": null
+    },
+    {
+      "criterion_id": "is_ai_vendor",
+      "met": "no",
+      "evidence_id": "E5"
+    },
+    {
+      "criterion_id": "too_large_ai_team",
+      "met": "unknown",
+      "evidence_id": null
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "criterion_id": "industry",
+      "claim": "Razorpay operates in the finance sector providing payment and money‑management services.",
+      "source_url": "https://razorpay.com/about/",
+      "quote": "revolutionize money management for online businesses by providing clean, developer‑friendly APIs"
+    },
+    {
+      "id": "E2",
+      "criterion_id": "size",
+      "claim": "Razorpay has approximately 5,233 employees, exceeding the 5,000 upper limit.",
+      "source_url": "https://www.reveliolabs.com/companies/razorpay/employees",
+      "quote": "Razorpay, Inc. has approximately 5,233 total employees worldwide as of March 2026"
+    },
+    {
+      "id": "E3",
+      "criterion_id": "has_tech_team",
+      "claim": "Razorpay lists engineering‑focused initiatives and AI‑enabled product work on its careers page.",
+      "source_url": "https://razorpay.com/careers/",
+      "quote": "Build autonomous agents and re‑engineer systems with unlimited tokens to scale fintech at 100x velocity"
+    },
+    {
+      "id": "E4",
+      "criterion_id": "ai_intent",
+      "claim": "Razorpay emphasizes AI growth and building AI‑powered solutions.",
+      "source_url": "https://razorpay.com/careers/",
+      "quote": "AI growth is exponential. With zero hierarchy, pay scales with output"
+    },
+    {
+      "id": "E5",
+      "criterion_id": "is_ai_vendor",
+      "claim": "Razorpay’s primary product is a payments/fintech platform, not an AI service.",
+      "source_url": "https://razorpay.com/about/",
+      "quote": "providing clean, developer‑friendly APIs and hassle‑free integration"
+    }
+  ],
+  "why_it_fits": "Razorpay is a finance‑focused fintech company, satisfying the industry requirement. Its employee count (5,233) exceeds the allowed size range, so it fails the size criterion. The company clearly has a technical team and demonstrates AI intent through its careers page, but there is no evidence of using DEPLOY's common stack or of high‑volume operations. It does not sell AI as its main product, and there is no indication of an oversized internal AI research team."
+}
