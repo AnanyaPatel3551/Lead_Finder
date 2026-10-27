@@ -1,7 +1,7 @@
 """Command-line entry point: python -m src.main evaluate --mode single|pipeline.
 
-  check "<company>" --website <url> --mode single     one company, printed and saved
-  evaluate --mode single [--part 1/3]                 the test set, or one third of it
+  check "<company>" --website <url> --mode single|pipeline   one company, printed and saved
+  evaluate --mode single|pipeline [--part 1/3]               the test set, or one third of it
   merge <run_dir> <run_dir> ...                       combine the parts into one run
 """
 
@@ -12,6 +12,7 @@ from pathlib import Path
 
 from src import config
 from src.agents.single_agent import run_single_agent
+from src.pipeline import run_company
 from src.llm import Usage
 from src.logger import RunLog, Timer
 from src.schemas import CriteriaFile, LeadCard
@@ -20,6 +21,10 @@ from evals.scoring import load_test_set
 
 # Must match across parts and across Day 1 / Day 2, or the comparison is not fair
 MUST_MATCH = ("mode", "model", "criteria_version", "criteria_sha256", "test_set_sha256")
+
+# Both architectures take (company, website, criteria_file, log) and return (LeadCard | None, Usage),
+# so everything below this choice (saving, usage, --part, merge) is the same code for both days
+RUNNERS = {"single": run_single_agent, "pipeline": run_company}
 
 
 def _file_sha256(path: Path) -> str:
@@ -36,8 +41,7 @@ def _save(log: RunLog, cards: list[LeadCard], summary: dict) -> None:
 
 def run_companies(companies: list[tuple[str, str]], mode: str, label: str, part: str | None) -> Path:
     """Run the chosen architecture on (company, website) pairs. Out: the run folder."""
-    if mode != "single":
-        raise SystemExit("--mode pipeline is not built yet (Day 2).")
+    runner = RUNNERS[mode]
     criteria_file = CriteriaFile.model_validate_json(config.CRITERIA_PATH.read_text(encoding="utf-8"))
     log = RunLog(label)
     usage = Usage()
@@ -52,7 +56,7 @@ def run_companies(companies: list[tuple[str, str]], mode: str, label: str, part:
         for company, website in companies:
             print(f"- {company} ...", flush=True)
             try:
-                card, company_usage = run_single_agent(company, website, criteria_file, log)
+                card, company_usage = runner(company, website, criteria_file, log)
             except Exception as error:  # a too-large request or exhausted 429 retries: log it, keep going
                 log.event("run", company, output=f"error: {type(error).__name__}: {error}", step="error")
                 card, company_usage = None, Usage()
