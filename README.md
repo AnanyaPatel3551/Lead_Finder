@@ -22,23 +22,40 @@ script are used on both days. Only the architecture changes.
 
 | Metric | Day 1: single agent | Day 2: four roles |
 | --- | --- | --- |
-| Precision (target ≥ 75%) | | |
-| Recall (target ≥ 50%) | | |
-| Planted errors caught (of 3) | | |
-| Unverifiable claims (quote or URL not found on the live page) | | |
-| LLM requests | | |
-| Tokens (input / output) | | |
-| Time for the run | | |
+| Precision (target ≥ 75%) | 100% (1/1) | |
+| Recall (target ≥ 50%) | 14% (1/7) | |
+| Planted errors caught (of 3) | n/a (no checking step) | |
+| Unverifiable claims (quote or URL not found on the live page) | 18 of 48 evidence items | |
+| LLM requests | 68 | |
+| Tokens (input / output) | 117,527 / 15,237 | |
+| Time for the run | 788 s (three parts, run one after another) | |
 | Cost | $0 (free tier) | $0 (free tier) |
 
-Run details to fill in: model `openai/gpt-oss-120b` (Groq) · criteria version `…` · commit `…`
-· date `…`.
+Day 1 run details: model `openai/gpt-oss-120b` (Groq) · criteria version `draft-2026-10-26c` ·
+commit `0a891d4` · date 2026-10-28 · run `runs/2026-10-28T13-10-39_merged_single` · 21 Tavily
+searches · all three parts on one key.
+
+**Day 1 notes:**
+- **Verdicts:** 1 fit, 6 not_fit, 4 not_enough_evidence, 1 missing. upGrad failed with Groq HTTP
+  400 `output_parse_failed` mid tool loop. It was logged and skipped, and scores as `not_fit`, which
+  matches its label by chance.
+- **Why recall is low:** all 6 missed fits are labelled fit, and the tool never said fit for a
+  labelled not_fit. The signals `common_stack` and `ops_heavy` came back `unknown` on 10 of 11
+  cards, so most companies did not reach `min_signals_for_fit`. Chargebee met every must-have
+  with no exclusion but had only 1 signal, so it scored `not_fit`.
+- **Unverifiable claims** are measured by running the checker's code checks (`check_lead`, no
+  LLM) on the final cards: 10 URLs did not load for our fetcher and 8 quotes were not found on
+  the live page. Day 2 is measured the same way on its final cards.
 
 **Read the numbers with care:** with 12 companies, a single company decides whether we pass
 75% precision, so a difference of a few percentage points is not meaningful. Precision and
 recall are shown with their counts.
 
 `not_enough_evidence`, `unverified` and missing leads all count as `not_fit` in scoring.
+
+**Failed companies rule (same on Day 1 and Day 2):** a company that fails during a run (an error
+is logged and the company is skipped, so no lead card is produced) counts as `not_fit` and is
+not re-run. Failures are part of how an architecture behaves, so they stay in its score.
 
 ## Test set
 
