@@ -77,7 +77,7 @@ All three not_fit types are near misses on purpose: each one almost fits.
 
 ## 3. Success metric
 
-On our 12 human-labelled test companies:
+On our 12 labelled test companies (AI-assisted, see Risks):
 - **Precision at least 75%:** of the companies the tool calls "fit", at least 3 in 4 really are.
 - **Recall at least 50%:** the tool finds at least half of the companies that really are fit.
   Without this, a tool that hardly ever says "fit" could score high precision while missing
@@ -117,7 +117,7 @@ covers India only or the whole world is an open question for the organisers.
 | Free-tier limits stop a scored run halfway | Runs split across three keys; if a run stops, re-run only the missing companies |
 | Small test set | One company moves precision a lot; we report counts, not only percentages |
 | Wrong or missing company size | Company sites rarely state headcount, so `size` is often `unknown`. To stop this alone causing missed fits, `size` has `unknown_blocks: false`. The cost: a company that is really too small or too large, but whose size we never find, can still come out as `fit`. Check this first among Day 1 disagreements |
-| Labellers disagree | Our labels are a judgement call. Two people label each company independently, and we record where they disagreed |
+| Labels are not independent human judgements | The 12 companies were labelled with AI assistance (Claude, a different model from the agent) from public sources cited in each row, by a single labeller, so there is no labeller-agreement figure and the score shows agreement with these documented labels, not with expert human judgement |
 
 ## 5. Smallest version (what is in for today)
 

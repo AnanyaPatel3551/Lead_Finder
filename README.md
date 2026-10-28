@@ -17,8 +17,8 @@ python -m scripts.smoke_test   # one LLM call: checks the key, the model and JSO
 
 ## Results: Day 1 vs Day 2
 
-The same 12 human-labelled companies, model, tools, criteria file and scoring script are used
-on both days. Only the architecture changes.
+The same 12 labelled companies (see "Test set" below), model, tools, criteria file and scoring
+script are used on both days. Only the architecture changes.
 
 | Metric | Day 1: single agent | Day 2: four roles |
 | --- | --- | --- |
@@ -40,11 +40,25 @@ recall are shown with their counts.
 
 `not_enough_evidence`, `unverified` and missing leads all count as `not_fit` in scoring.
 
+## Test set
+
+- **How the 12 were chosen:** real companies picked to cover the ICP rules in
+  `data/criteria.json`: in-ICP industries and sizes (fits), too large (upGrad, Infosys),
+  outside the ICP industries (Lemon Tree Hotels), the AI-vendor exclusion (Fractal Analytics,
+  Yellow.ai), AI as a feature rather than the main product (Zeta, Freshworks) and a size near
+  the 5,000 limit (Freshworks). 7 are labelled `fit`, 5 `not_fit`. Gap: no company fails on
+  `has_tech_team` or `too_large_ai_team` alone, so those two rules are not tested in isolation.
+- **How they were labelled:** with AI assistance (Claude, a different model from the agent's
+  `gpt-oss-120b`), researched from public sources that are cited in each row's `note`. There is
+  a single labeller, so `label_b` is empty and there is no labeller-agreement figure.
+- **What this limits:** the labels are not independent human judgements, and we cannot show how
+  much people would disagree on these companies. The score shows how well the tool matches
+  these documented labels, not that it matches expert human judgement.
+
 ## How the comparison is kept fair
 
-- **Labels never come from an LLM.** Two teammates label each company independently
-  (`label_a`, `label_b` in `data/test_set.csv`). The agreed `label` is what we score, and
-  `note` records how any disagreement was settled.
+- **One frozen test set:** `data/test_set.csv` is committed before Day 1 and not changed after,
+  so both days are scored against the same labels and the same `--part` slices.
 - **One scoring rule:** both architectures get their score and verdict from `src/verdict.py`.
   The thresholds live in `data/criteria.json`, never in code.
 - **Same limits:** every limit lives in `src/config.py`. These are 5 tool calls per company,

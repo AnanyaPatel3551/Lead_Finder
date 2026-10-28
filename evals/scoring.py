@@ -12,7 +12,7 @@ from pydantic import TypeAdapter
 from src import config
 from src.schemas import LeadCard
 
-LABELS = ("fit", "not_fit")  # humans always decide, so ground truth has no "not_enough_evidence"
+LABELS = ("fit", "not_fit")  # the labeller always decides, so ground truth has no "not_enough_evidence"
 
 
 def _key(company: str) -> str:
@@ -21,18 +21,32 @@ def _key(company: str) -> str:
 
 
 def load_test_set(path: Path) -> list[dict[str, str]]:
-    """Read test_set.csv and enforce the labelling rules. Raises ValueError on a bad row."""
+    """Read test_set.csv and enforce the labelling rules. Raises ValueError on a bad row.
+
+    label_b is optional (single labeller); when both labels are given and differ, a note is required.
+    """
     with path.open(encoding="utf-8", newline="") as file:
         rows = list(csv.DictReader(file))
     for number, row in enumerate(rows, start=2):  # row 1 is the header
-        for column in ("company", "website", "label"):
+        for column in ("company", "website", "label_a", "label"):
             if not (row.get(column) or "").strip():
                 raise ValueError(f"{path} row {number}: '{column}' is empty")
         if row["label"] not in LABELS:
             raise ValueError(f"{path} row {number}: label '{row['label']}' must be one of {LABELS}")
-        if row["label_a"] != row["label_b"] and not row["note"].strip():
+        label_b = (row.get("label_b") or "").strip()
+        # An empty label_b means "no second labeller", not "the labellers disagree"
+        if label_b and label_b != row["label_a"].strip() and not row["note"].strip():
             raise ValueError(f"{path} row {number}: labellers disagree, so 'note' must say how it was settled")
     return rows
+
+
+def labeller_agreement(rows: list[dict[str, str]]) -> str:
+    """Agreement over rows that have both labels; 'n/a (single labeller)' when no row has a label_b."""
+    double_labelled = [row for row in rows if (row.get("label_b") or "").strip()]
+    if not double_labelled:
+        return "n/a (single labeller)"
+    agreed = sum(1 for row in double_labelled if row["label_a"].strip() == row["label_b"].strip())
+    return percent(agreed, len(double_labelled))
 
 
 def load_leads(path: Path) -> list[LeadCard]:
@@ -73,7 +87,6 @@ def score(leads: list[LeadCard], rows: list[dict[str, str]]) -> None:
     test_keys = {_key(row["company"]) for row in rows}
     extra = [lead.company for lead in leads if _key(lead.company) not in test_keys]
     true_pos, false_pos, false_neg = counts[("fit", "fit")], counts[("not_fit", "fit")], counts[("fit", "not_fit")]
-    agreed = sum(1 for row in rows if row["label_a"] == row["label_b"])
 
     print(f"Companies scored: {len(rows)}   Verdicts: {verdict_counts}")
     print(f"Precision: {percent(true_pos, true_pos + false_pos)}   Recall: {percent(true_pos, true_pos + false_neg)}")
@@ -82,7 +95,7 @@ def score(leads: list[LeadCard], rows: list[dict[str, str]]) -> None:
     print(f"  labelled not_fit    {counts[('not_fit', 'fit')]:>9}   {counts[('not_fit', 'not_fit')]:>13}")
     print(f"\nDisagreements ({len(disagreements)}):")
     print("\n".join(disagreements) if disagreements else "  none")
-    print(f"\nLabeller agreement (label_a == label_b): {percent(agreed, len(rows))}")
+    print(f"\nLabeller agreement (label_a == label_b): {labeller_agreement(rows)}")
     if extra:
         print(f"Warning: leads not in the test set, ignored: {extra}")
 
