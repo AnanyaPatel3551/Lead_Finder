@@ -193,6 +193,18 @@ def call_llm(messages: list[dict], tools: list[dict] | None = None,
     raise RuntimeError("unreachable: the loop always returns or raises")
 
 
+# First-attempt failures inside call_llm_validated. llm.py has no run log, so they wait here and
+# main.py writes them to log.jsonl after each company, the same way for both architectures.
+_first_attempt_errors: list[dict] = []
+
+
+def take_first_attempt_errors() -> list[dict]:
+    """Return the first-attempt validation errors recorded since the last call, and clear them."""
+    errors = list(_first_attempt_errors)
+    _first_attempt_errors.clear()
+    return errors
+
+
 def call_llm_validated(messages: list[dict], schema: type[BaseModel],
                        reasoning_effort: str = config.REASONING_EFFORT,
                        temperature: float | None = None) -> LLMResponse:
@@ -208,6 +220,9 @@ def call_llm_validated(messages: list[dict], schema: type[BaseModel],
 
     # The model sees its own bad reply and exactly what was wrong with it
     error_text = first.validation_error[:1500]  # Pydantic repeats the input; keep the retry small
+    # Recorded only, never acted on: says why the retry happened (schema name = which role)
+    _first_attempt_errors.append({"schema": schema.__name__, "finish_reason": first.finish_reason,
+                                  "error": error_text, "usage": vars(first.usage)})
     if first.finish_reason == "tool_use_failed":
         # The model tried to call a tool, but this call offers none
         correction = ("You cannot call tools now: research is over. Reply with the final JSON only, "

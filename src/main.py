@@ -13,7 +13,7 @@ from pathlib import Path
 from src import config
 from src.agents.single_agent import run_single_agent
 from src.pipeline import run_company
-from src.llm import Usage
+from src.llm import Usage, take_first_attempt_errors
 from src.logger import RunLog, Timer
 from src.schemas import CriteriaFile, LeadCard
 from src.tools.search import search_usage
@@ -61,6 +61,9 @@ def run_companies(companies: list[tuple[str, str]], mode: str, label: str, part:
                 log.event("run", company, output=f"error: {type(error).__name__}: {error}", step="error")
                 card, company_usage = None, Usage()
             usage.add(company_usage)
+            retries = take_first_attempt_errors()
+            if retries:
+                log.event("llm", company, output=retries, step="validation_retries")
             if card is None:
                 summary["failed"].append(company)
             else:

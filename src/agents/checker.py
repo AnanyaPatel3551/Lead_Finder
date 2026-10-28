@@ -254,6 +254,9 @@ def check(card: LeadCard, criteria_file: CriteriaFile | None = None, fetch: Fetc
         criteria_file = CriteriaFile.model_validate_json(config.CRITERIA_PATH.read_text(encoding="utf-8"))
     issues = check_lead(card, criteria_file, fetch, read_cache)
     usage = Usage()
-    if not issues:
+    has_claims = any(result.met != "unknown" for result in card.criteria)
+    # With no yes/no claims there is nothing to judge; a missed exclusion needs a quote, and an
+    # all-unknown card cites none. So skipping changes the cost, never the result.
+    if not issues and has_claims:
         issues, usage = judge_lead(card, criteria_file)
     return CheckResult(passed=not issues, issues=issues), usage
