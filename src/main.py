@@ -3,6 +3,7 @@
   check "<company>" --website <url> --mode single|pipeline   one company, printed and saved
   evaluate --mode single|pipeline [--part 1/3]               the test set, or one third of it
   merge <run_dir> <run_dir> ...                       combine the parts into one run
+  report <run_dir>                                    counts + LLM summary -> <run_dir>/report.md
 """
 
 import argparse
@@ -11,6 +12,7 @@ import json
 from pathlib import Path
 
 from src import config
+from src.agents.reporter import write_report
 from src.agents.single_agent import run_single_agent
 from src.pipeline import run_company
 from src.llm import Usage, take_first_attempt_errors
@@ -128,6 +130,8 @@ def main() -> None:
     evaluate.add_argument("--part", help="e.g. 1/3: run only that third of test_set.csv")
     merge_cmd = commands.add_parser("merge", help="combine part runs into one")
     merge_cmd.add_argument("run_dirs", nargs="+", type=Path)
+    report = commands.add_parser("report", help="write report.md for a finished (or merged) run")
+    report.add_argument("run_dir", type=Path)
     args = parser.parse_args()
 
     if args.command == "check":
@@ -141,8 +145,10 @@ def main() -> None:
         label = f"evaluate_{args.mode}" + (f"_part{args.part.replace('/', 'of')}" if args.part else "")
         # Company and website go through exactly as written in test_set.csv, so scoring can match them
         run_companies([(row["company"], row["website"]) for row in rows], args.mode, label, args.part)
-    else:
+    elif args.command == "merge":
         merge(args.run_dirs)
+    else:
+        print(f"Report written to {write_report(args.run_dir)}")
 
 
 if __name__ == "__main__":
